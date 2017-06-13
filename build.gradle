@@ -1,0 +1,77 @@
+configurations { [jaxb, generate, tests, jaxb] }
+
+task wsimport {
+    System.setProperty('javax.xml.accessExternalSchema', 'file')
+    System.setProperty("com.sun.xml.bind.v2.runtime.JAXBContextImpl.fastBoot", "true")
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+// Custom JAXB bindings
+apply from: 'xjc.gradle'
+
+jar {
+    baseName = 'gs-serving-web-content'
+    version =  '0.1.0'
+    from genClientJaxb.classesDir, genServiceJaxb.classesDir
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    generatedSourcesDir = file("${buildDir}/generated-sources/jaxb")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "src/main/java"
+            srcDir generatedSourcesDir
+        }
+    }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.springframework.boot:spring-boot-devtools")
+    testCompile("junit:junit")
+
+    // JAXB/WSDL TO JAVA (client)
+    generate 'com.sun.xml.ws:jaxws-rt:2.2.10'
+    generate 'com.sun.xml.ws:jaxws-tools:2.2.10'
+    compile 'wsdl4j:wsdl4j:1.6.3'
+
+    // SERVICE
+    compile("org.springframework.boot:spring-boot-starter-web-services")
+    jaxb("org.glassfish.jaxb:jaxb-xjc:2.2.11")
+
+    // JAXB classes
+    compile(files(genClientJaxb.classesDir).builtBy(genClientJaxb))
+    compile(files(genServiceJaxb.classesDir).builtBy(genServiceJaxb))
+
+    // UNIT TEST
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    // https://mvnrepository.com/artifact/org.springframework.ws/spring-ws-test
+    testCompile group: 'org.springframework.ws', name: 'spring-ws-test', version: '2.4.0.RELEASE'
+
+
+
+}

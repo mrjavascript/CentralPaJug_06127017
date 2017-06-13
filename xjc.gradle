@@ -1,0 +1,71 @@
+task genServiceJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/soap/service/jaxb"
+    ext.classesDir = "${buildDir}/classes/soap/service/jaxb"
+    ext.schema = "src/main/resources/service/convert.xsd"
+
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 1.6, target: 1.6, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
+        }
+    }
+}
+
+task genClientJaxb {
+
+    // Source code
+    ext.sourcesDir = "${buildDir}/generated-sources/soap/client/jaxb"
+
+    // Classes
+    ext.classesDir = "${buildDir}/classes/soap/client/jaxb"
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            // Generate JAXB classes
+            taskdef name: 'wsimport', classname: 'com.sun.tools.ws.ant.WsImport', classpath: configurations.generate.asPath
+            wsimport wsdl: sourceSets.main.resources.srcDirs.toList()[0].getPath() + "/client/ConvertTemperature.wsdl", sourcedestdir: sourcesDir, package: 'og.melusky.soap.client.jaxb', xnocompile: true
+
+            // Compile
+            javac(destdir: classesDir, source: 1.7, target: 1.7, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            // Copy classes from above
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) { exclude(name: "**/*.java") }
+            }
+        }
+    }
+}

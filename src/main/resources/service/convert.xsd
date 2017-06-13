@@ -1,0 +1,19 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://melusky.org/soap/service/jaxb"
+           targetNamespace="http://melusky.org/soap/service/jaxb" elementFormDefault="qualified">
+
+    <xs:element name="tempConvertRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="C" type="xs:double"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="tempConvertResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="F" type="xs:double"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

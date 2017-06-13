@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:jaxb="http://melusky.org/soap/service/jaxb">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <jaxb:tempConvertRequest>
+            <jaxb:C>100</jaxb:C>
+        </jaxb:tempConvertRequest>
+    </soapenv:Body>
+</soapenv:Envelope>

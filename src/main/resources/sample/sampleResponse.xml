@@ -1,0 +1,8 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <ns2:tempConvertResponse xmlns:ns2="http://melusky.org/soap/service/jaxb">
+            <ns2:F>212.0</ns2:F>
+        </ns2:tempConvertResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
